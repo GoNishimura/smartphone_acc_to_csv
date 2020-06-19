@@ -16,7 +16,7 @@
       
       <h2>Count: <span id="pushup_cnt">0</span> </h2>
         <p> sensor ready: <span id="sensor_ready">0</span> </p>
-        <p> len gacc_data: <span id="gacc_data">0</span> </p>
+        <p> gacc_data: <span id="gacc_data">0</span> </p>
         <p> down: <span id="down">0</span> </p>
 
     </body>
@@ -91,7 +91,7 @@ function countSquat(aevent){
         }
     }
     $("#sensor_ready").text(sensor_ready);
-    $("#gacc_data").text(gacc_data.length);
+    $("#gacc_data").text(gacc_data[0]);
     $("#down").text(down);
     $("#pushup_cnt").text(pushup_cnt);
 }
