@@ -131,7 +131,9 @@ function countSquat(aevent){
     const size_limit = 10;
     const thresh = -8;
     
-    addLimited(gacc_data, aevent.accelerationIncludingGravity.y, size_limit);
+    //addLimited(gacc_data, aevent.accelerationIncludingGravity.y, size_limit);
+    gacc_data.unshift(aevent.accelerationIncludingGravity.y);
+    gacc_data.splice(size_limit);
     if (gacc_data.length >= size_limit) {
         var total = 0
         for (var i = 0; i < gacc_data.length; i++) {
