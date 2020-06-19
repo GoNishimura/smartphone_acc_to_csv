@@ -14,7 +14,7 @@
       <button onclick="requestMotionPermission();">Start squat!</button>
       <button onclick="stopDeviceMotion();">Stop</button>
       
-      <h2>Counter</h2>
+      <h2>Count: <span id="pushup_cnt">0</span> </h2>
         <p> len gacc_data: <span id="gacc_data">0</span> </p>
         <p> down: <span id="down">0</span> </p>
         <p> pushup_cnt: <span id="pushup_cnt">0</span> </p>
@@ -23,6 +23,7 @@
         <p> X: <span id="accel-x">0</span> </p> 
         <p> Y: <span id="accel-y">0</span> </p> 
         <p> Z: <span id="accel-z">0</span> </p> 
+        <!-- text area for storing the csv data -->
         <textarea id="acc-csv" width=40 height=40></textarea>
 
       <h2>Acceleration (including gravity)</h2>
@@ -37,25 +38,11 @@
         <p> Gamma: <span id="rotate-g">0</span> </p> 
         <textarea id="rot-csv" width=40 height=40></textarea>
 
-    <h1>Data from Magnetometer</h1>
-      <button onclick="requestOrientationPermission();">Get permission</button>
-      <button onclick="stopDeviceOrientation();">Stop</button>
-
-      <p> Absolute: <span id="ori-abs">0</span> </p> 
-      <p> Alpha: <span id="ori-a">0</span> </p> 
-      <p> Beta: <span id="ori-b">0</span> </p> 
-      <p> Gamma: <span id="ori-g">0</span> </p> 
-
-    <!-- text area for storing the csv data -->
-    <textarea id="mag-csv" width=40 height=40></textarea>
-
     </body>
 
 
 <!--  ===========================================  -->
 <script type="text/javascript">
-// alert("Welcome to this page!");
-
 //////////////////////////////////////////////////////
 //Function to get sensor access permission from the browser
 //////////////////////////////////////////////////////
@@ -89,40 +76,11 @@ function stopDeviceMotion(){
     //window.removeEventListener("devicemotion", handleAcceleration, false);
     window.removeEventListener("devicemotion", countSquat, false);
 }
-
-
-//////////////////////////////////////////////////////
-//Function to get sensor access permission from the browser
-//////////////////////////////////////////////////////
-function requestOrientationPermission(){
-  if ( DeviceOrientationEvent &&
-       typeof DeviceOrientationEvent.requestPermission === 'function' ) {
-      // iOS 13+ の Safari
-      // 許可を取得
-      DeviceOrientationEvent.requestPermission().then(permissionState => {
-	  if (permissionState === 'granted') {
-              // 許可を得られた場合、deviceorientationをイベントリスナーに追加
-	      window.addEventListener("deviceorientation", handleOrientation, true);
-	  } else {
-              // 許可を得られなかった場合の処理
-	      console.log("Perrmission not granted!");
-	      alert("Perrmission not granted!");
-	  }
-      })
-	  .catch(console.error) // https通信でない場合などで許可を取得できなかった場
-  } else {
-    console.log("detected other device. so adding listener...");
-    window.addEventListener("deviceorientation", handleOrientation, true);
-  }
-}
-
-function stopDeviceOrientation(){ 
-    window.removeEventListener("deviceorientation", handleOrientation, true);
-}
     
 var gacc_data = [];
 var down = false;
 var pushup_cnt = 0;
+var sensor_ready = false;
 
 // add data while limiting the size of the array
 function addLimited(array, value, limit) {
@@ -144,8 +102,9 @@ function countSquat(aevent){
         }
         var avg = total / gacc_data.length;
         
-        if (down == false && avg > thresh) down = true;
-        if (down == true && avg < thresh-0.3) {
+        if (sensor_ready == false && avg < thresh-0.3) sensor_ready = true;
+        if (down == false && avg > thresh && sensor_ready == true) down = true;
+        if (down == true && avg < thresh-0.3 && sensor_ready == true) {
             pushup_cnt += 1;
             down = false;
         }
@@ -155,47 +114,6 @@ function countSquat(aevent){
     $("#pushup_cnt").text(pushup_cnt);
 }
 
-
-////////////////////////////////////////////////////////////////////
-//Function(1): to handle acceleration data
-//  - This function will be called about 10-50 times per second
-////////////////////////////////////////////////////////////////////
-function handleAcceleration(aevent){
-    //alert("" + event.acceleration.x + " " + event.acceleration.y + " " + event.acceleration.z);
-    $('#accel-x').text( aevent.acceleration.x );
-    $('#accel-y').text( aevent.acceleration.y );
-    $('#accel-z').text( aevent.acceleration.z );
-
-    $('#accel-g-x').text( aevent.accelerationIncludingGravity.x );
-    $('#accel-g-y').text( aevent.accelerationIncludingGravity.y );
-    $('#accel-g-z').text( aevent.accelerationIncludingGravity.z );
-
-    $('#rotate-a').text( aevent.rotationRate.alpha );
-    $('#rotate-b').text( aevent.rotationRate.beta );
-    $('#rotate-g').text( aevent.rotationRate.gamma );
-
-    var e_time = new Date();
-    $('#acc-csv').append(e_time.getTime() + ", acc," + aevent.acceleration.x + "," + aevent.acceleration.y + "," + aevent.acceleration.z + "\n");
-    $('#gacc-csv').append(e_time.getTime() + ", gacc," + aevent.accelerationIncludingGravity.x + "," + aevent.accelerationIncludingGravity.y + "," + aevent.accelerationIncludingGravity.z + "\n");
-    $('#rot-csv').append(e_time.getTime() + ", rot," + aevent.rotationRate.alpha + "," + aevent.rotationRate.beta + "," + aevent.rotationRate.gamma + "\n");
-}
-
-////////////////////////////////////////////////////////////////////
-//Function(2): to handle magnetometer data
-//  - This function will be called about 10-50 times per second
-////////////////////////////////////////////////////////////////////
-function handleOrientation(oevent){
-    $('#ori-abs').text( oevent.absolute );
-    $('#ori-a').text( oevent.alpha );
-    $('#ori-b').text( oevent.beta );
-    $('#ori-g').text( oevent.gamma );
-
-    var e_time = new Date();
-    $('#mag-csv').append(e_time.getTime() + ", mag," + oevent.absolute + "," + oevent.alpha + "," + oevent.beta + "," + oevent.gamma + "\n");
-}
-
 </script>
-<!--  ===========================================  -->
-
 
 </html>
