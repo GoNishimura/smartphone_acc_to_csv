@@ -67,7 +67,8 @@ function requestMotionPermission(){
       DeviceMotionEvent.requestPermission().then(permissionState => {
 	  if (permissionState === 'granted') {
               // 許可を得られた場合、devicemotionをイベントリスナーに追加
-	      window.addEventListener("devicemotion", handleAcceleration, false);
+	      //window.addEventListener("devicemotion", handleAcceleration, false);
+          window.addEventListener("devicemotion", countSquat, false);
 	  } else {
               // 許可を得られなかった場合の処理
 	      console.log("Perrmission not granted!");
@@ -78,13 +79,15 @@ function requestMotionPermission(){
   } else {
       //For other devices
       console.log("detected other device. so adding listener...");
-      window.addEventListener("devicemotion", handleAcceleration, false);
+      //window.addEventListener("devicemotion", handleAcceleration, false);
+      window.addEventListener("devicemotion", countSquat, false);
   }
 
 }
 
 function stopDeviceMotion(){ 
-    window.removeEventListener("devicemotion", handleAcceleration, false);
+    //window.removeEventListener("devicemotion", handleAcceleration, false);
+    window.removeEventListener("devicemotion", countSquat, false);
 }
 
 
