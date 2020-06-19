@@ -8,16 +8,16 @@
   <body>
       
     <a href="./index.html">Sensor logger</a>
-    <a href="./squat_cnt.html">Squat counter</a>
+    <a href="./pushup_cnt.html">Push up counter</a>
 
     <h1>Data from accelerometer</h1>
       <button onclick="requestMotionPermission();">Start squat!</button>
       <button onclick="stopDeviceMotion();">Stop</button>
       
       <h2>Counter</h2>
-        <p> gacc_data: <span id="gacc_data">0</span> </p>
+        <p> len gacc_data: <span id="gacc_data">0</span> </p>
         <p> down: <span id="down">0</span> </p>
-        <p> squat_cnt: <span id="squat_cnt">0</span> </p>
+        <p> pushup_cnt: <span id="pushup_cnt">0</span> </p>
 
       <h2>Acceleration</h2>
         <p> X: <span id="accel-x">0</span> </p> 
@@ -119,7 +119,7 @@ function stopDeviceOrientation(){
     
 var gacc_data = [];
 var down = false;
-var squat_cnt = 0;
+var pushup_cnt = 0;
 
 // add data while limiting the size of the array
 function addLimited(array, value, limit) {
@@ -143,13 +143,13 @@ function countSquat(aevent){
         
         if (down == false && avg > thresh) down = true;
         if (down == true && avg < thresh-0.3) {
-            squat_cnt += 1;
+            pushup_cnt += 1;
             down = false;
         }
     }
-    $("#gacc_data").text(gacc_data.length)
-    $("#down").text(down)
-    $("#squat_cnt").text(squat_cnt)
+    $("#gacc_data").text(gacc_data.length);
+    $("#down").text(down);
+    $("#pushup_cnt").text(pushup_cnt);
 }
 
 
