@@ -11,13 +11,8 @@
     <a href="./squat_cnt.html">Squat counter</a>
 
     <h1>Data from accelerometer</h1>
-      <button onclick="requestMotionPermission();">Start squat!</button>
+      <button onclick="requestMotionPermission();">Get permission</button>
       <button onclick="stopDeviceMotion();">Stop</button>
-      
-      <h2>Counter</h2>
-        <p> gacc_data: <span id="gacc_data">0</span> </p>
-        <p> down: <span id="down">0</span> </p>
-        <p> squat_cnt: <span id="squat_cnt">0</span> </p>
 
       <h2>Acceleration</h2>
         <p> X: <span id="accel-x">0</span> </p> 
@@ -116,39 +111,7 @@ function requestOrientationPermission(){
 function stopDeviceOrientation(){ 
     window.removeEventListener("deviceorientation", handleOrientation, true);
 }
-    
-var gacc_data = [];
-var down = false;
-var squat_cnt = 0;
 
-// add data while limiting the size of the array
-function addLimited(array, value, limit) {
-  array.unshift(value); // [old] -> [new, old]
-  array.splice(limit); // if limit = 3 and [4, 3, 2, 1] -> [4, 3, 2]
-}
-    
-function countSquat(aevent){
-    const size_limit = 10;
-    const thresh = -8;
-    
-    addLimited(gacc_data, aevent.accelerationIncludingGravity.y, size_limit);
-    if (gacc_data.length >= size_limit) {
-        var total = 0
-        for (var i = 0; i < gacc_data.length; i++) {
-            total += gacc_data[i];
-        }
-        var avg = total / gacc_data.length;
-        
-        if (down == false && avg > thresh) down = true;
-        if (down == true && avg < thresh-0.3) {
-            squat_cnt += 1;
-            down = false;
-        }
-    }
-    $("#gacc_data").text(squat_cnt)
-    $("#down").text(down)
-    $("#squat_cnt").text(squat_cnt)
-}
 
 
 ////////////////////////////////////////////////////////////////////
